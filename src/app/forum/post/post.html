@@ -1,0 +1,99 @@
+<div class="post-list" *ngIf="action == 'list'">  
+    <div class="w-100 d-block" style="overflow:hidden">
+        <div class="float-right">
+            <p class="d-inline-block">Filter by: </p> 
+            <select class="form-control col-sm-6 d-inline-block" name="nooflist" [(ngModel)]="nooflist" (change)="loadPosts()">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+       
+    <div class="col-6">
+    <div class="card">
+        <div class="card-block px-2">
+
+            <form [formGroup]="form" (ngSubmit)="onSubmitPostForm()">
+            <div class="form-group">
+                <label for="inputName">Post Title</label>
+                <input type="text" class="form-control" id="inputName" formControlName="subject" placeholder="Title" required>
+            </div>
+            <div class="form-group">
+                <label for="inputContent">Content</label>
+                <textarea class="form-control" name="content" id="inputContent" formControlName="content" rows="10"  required></textarea>
+            </div>
+        
+            <div class="form-check bg-faded py-3 px-3" >
+                <h6>Categories</h6>
+                <ul class="categories_listing">
+                    <li *ngFor=" let c of categories; let i = index; ">
+                        <label class="form-check-label mx-2">
+
+                        <input type="checkbox"
+                        value="{{ c.id }}"
+                        (change)=" onChangeFormCategory( $event ) ">
+                        {{ c['name'] }}
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <div class="form-check">
+                <div class="alert alert-danger" role="alert" *ngIf="postError.message">
+                    <strong>Oh snap!</strong> {{ postError.message }}
+                </div>
+                <button type="submit" class="btn btn-primary float-right">Publish</button>
+            </div>
+
+            </form>
+
+        </div> 
+    </div>
+    
+    </div>
+    <div class="col-6">
+    <div class="card mb-2" style="overflow:hidden" *ngFor="let post of pagedItems">
+        
+        <div class="card-block">
+            <div class="px-2" style="position:relative">
+                <div *ngIf="post.uid == user.uid" style="position:absolute; right:0px">
+                    <div class="postEdit">
+                    <a (click)="onClickEdit(post)">Edit</a> | <a (click)="onClickDelete(post)">Delete</a>
+                    </div>
+                </div>
+            <h4 class="card-title">{{ post.subject }}</h4>
+            <p class="card-text">{{ post.content }}</p>
+            <span *ngIf="post.name" class="d-block ml-auto font-1">Author: {{ post.name }}</span>
+            <span class="d-block ml-auto font-1">Date Posted: {{ post.stamp }}</span>
+            <span class="d-block ml-auto font-1">Category: {{ post.categories }}</span>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row mt-2">
+                <div class="col">
+                    <i class="fa fa-thumbs-up" aria-hidden="true"></i> Like
+                </div>
+                <div class="col">
+                    <i class="fa fa-comment" aria-hidden="true" [routerLink]="['comment', post.key]"></i>  Comment
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav aria-label="navigation">
+        <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+            <li class="page-item" [ngClass]="{disabled:pager.currentPage === 1}">
+                <a class="page-link" (click)="setPage(pager.currentPage - 1)">Previous</a>
+            </li>
+            <li class="page-item" *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                <a class="page-link" (click)="setPage(page)">{{page}}</a>
+            </li>
+            <li class="page-item" [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                <a class="page-link" (click)="setPage(pager.currentPage + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+    </div>
+</div>
+    
